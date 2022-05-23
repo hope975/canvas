@@ -14,14 +14,17 @@
             // 监听canvas的鼠标点击事件
             console.log(e.clientX);
             console.log(e.clientY);
-            // 产生盒子元素
+            // 创建盒子元素(文档创建标签)，目前只存在在内存中
             let div=document.createElement('div');
+            // div绝对定位，出现在鼠标点击的位置
             div.style.position='absolute';
             div.style.left=e.clientX+'px';
             div.style.top=e.clientY+'px';
             div.style.width='6px';
             div.style.height='6px';
+            // 鼠标左移一半
             div.style.marginLeft='-3px';
+            // 鼠标下移一半
             div.style.marginTop='-3px';
             div.style.borderRadius='50%';
             div.style.background='black';
