@@ -6,3 +6,7 @@
 #canvas{
     display: block;
 }
+body {
+    /* 设置这个属性的目的是防止屏幕跟着手指一起划 */
+    overflow: hidden;
+}

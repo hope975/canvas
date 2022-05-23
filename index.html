@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -17,26 +17,57 @@
         //console.log(document.documentElement.clientHeight);
         canvas.width=document.documentElement.clientWidth;//canvas的宽度等于屏幕的宽度
         canvas.height=document.documentElement.clientHeight;//canvas的宽度等于屏幕的高度
-        let ctx=canvas.getContext('2d');
-        ctx.fillStyle='black';// 设置填充颜色为黑色
-        let painting=false;//设置一个变量，用来判断鼠标是否点击
-        canvas.onmousedown=()=>{
-            painting=true;//鼠标按下更改变量为true
+        let ctx = canvas.getContext('2d');
+        ctx.fillStyle = 'black';// 设置填充颜色为黑色
+        ctx.lineWidth=4 //设置线宽度为4
+        ctx.lineCap='round';  //设置线段间连接为圆形
+        let painting = false;//设置一个变量，用来判断鼠标是否点击
+        let last=[]; //定义一个数组，用来记忆上一次的鼠标坐标
+        function drawLine(x1,y1,x2,y2){ //定义一个函数，用于点与点连接成线，x1,y1为起始点坐标，x2,y2为终止点坐标
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
         }
-        canvas.onmousemove=(e)=>{
-            if(painting===true){//如果鼠标按下
-                //ctx.fillRect(e.clientX-5,e.clientY-5,10,10)设置填充形状为矩形,要优化为画圆形
-                ctx.beginPath();
-                ctx.arc(e.clientX, e.clientY, 5, 0, 2 * Math.PI);//前两个为圆心坐标，中间为半径，后两个为角度
-                ctx.fill();//填充内容 
-                ctx.stroke();
-            }else{
-                console.log('鼠标没按下我什么也做不了');
+        // 下面两句话用于验证设备是否支持触屏
+        //var isTouchDevice='ontouchstart' in document.documentElement;
+        // console.log(isTouchDevice);
+        var isTouchDevice = 'ontouchstart' in document.documentElement;
+        if(isTouchDevice){//如果是触屏
+            console.log('我是触屏设备');
+            canvas.ontouchstart=(e)=>{
+                let x=e.touches[0].clientX;  //获得手指x坐标
+                let y=e.touches[0].clientY;  //获得手指y坐标
+                last = [x, y]; //记录x，y坐标
             }
+            canvas.ontouchmove=(e)=>{ //监听手指触摸事件，由于可能有多个手指，因此需要touches[0]
+                let x=e.touches[0].clientX; //获得手指x坐标
+                let y=e.touches[0].clientY; //获得手指y坐标
+                drawLine(last[0], last[1], x, y);
+                last = [x, y]; //更新x，y坐标的值
+            }
+
+        }else{//如果不是触屏则监听它的三个鼠标事件
+            canvas.onmousedown = (e) => {
+                painting = true;//鼠标按下更改变量为true
+                last=[e.clientX,e.clientY];
+            }
+            canvas.onmousemove = (e) => {
+                if (painting === true) {//如果鼠标按下
+                    //ctx.fillRect(e.clientX-5,e.clientY-5,10,10)设置填充形状为矩形,要优化为画圆形
+                    drawLine(last[0],last[1],e.clientX,e.clientY);
+                    last=[e.clientX,e.clientY];
+                } else {
+                    console.log('鼠标没按下我什么也做不了');
+                }
+            }
+            canvas.onmouseup = (e) => {
+                painting = false;//鼠标松开时变量设置为false，此时怎么移动鼠标都没有用
+            }
+
         }
-        canvas.onmouseup=()=>{
-            painting=false;//鼠标松开时变量设置为false，此时怎么移动鼠标都没有用
-        }
+        
+        
     </script>
 </body>
 </html>
